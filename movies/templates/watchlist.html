@@ -1,0 +1,165 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>My Watchlist | CineMatch</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
+
+</head>
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <a class="logo" href="/">
+            CineMatch
+        </a>
+
+        <div class="nav-links">
+
+            <a href="/">
+                Home
+            </a>
+
+            <a href="{% url 'watchlist' %}">
+                My Watchlist
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- WATCHLIST -->
+
+    <div class="container">
+
+        <div class="page-heading">
+
+            <h1>
+                My Watchlist
+            </h1>
+
+            <p>
+                Movies you've saved to watch later.
+            </p>
+
+        </div>
+
+
+        <div class="movies">
+
+
+            {% for item in items %}
+
+
+                <div class="watchlist-card">
+
+                    <h2>
+                        {{ item.movie.title }}
+                    </h2>
+
+                    <p class="info">
+                        {{ item.movie.genre }}
+                        •
+                        {{ item.movie.release_year }}
+                    </p>
+
+                    <p class="rating">
+                        ★ {{ item.movie.rating }}
+                    </p>
+
+                    <p class="mood">
+                        {{ item.movie.mood }}
+                    </p>
+
+                    <p class="description">
+                        {{ item.movie.description }}
+                    </p>
+
+
+                    <div class="card-buttons">
+
+
+                        <a
+                            class="details-button"
+                            href="{% url 'movie_detail' item.movie.id %}"
+                        >
+                            View Details
+                        </a>
+
+
+                        <form
+                            class="remove-form"
+                            method="POST"
+                            action="{% url 'remove_from_watchlist' item.movie.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                class="remove-button"
+                                type="submit"
+                            >
+                                Remove
+                            </button>
+
+                        </form>
+
+
+                    </div>
+
+                </div>
+
+
+            {% empty %}
+
+
+                <div class="empty empty-watchlist">
+
+                    <h2>
+                        Your watchlist is empty
+                    </h2>
+
+                    <p>
+                        Explore CineMatch and save movies you want to watch.
+                    </p>
+
+                    <a
+                        class="browse-button"
+                        href="/"
+                    >
+                        Browse Movies
+                    </a>
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+    </div>
+
+
+
+    <footer>
+        CineMatch — Find your next watch.
+    </footer>
+
+
+</body>
+
+</html>

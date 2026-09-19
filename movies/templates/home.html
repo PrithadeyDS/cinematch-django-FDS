@@ -1,0 +1,322 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>CineMatch</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
+
+</head>
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <a class="logo" href="/">
+            CineMatch
+        </a>
+
+        <div class="nav-links">
+
+            <a href="/">
+                Home
+            </a>
+
+            <a href="{% url 'watchlist' %}">
+                My Watchlist ({{ watchlist_count }})
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            CineMatch
+        </h1>
+
+        <p>
+            Find your next watch.
+        </p>
+
+
+        <!-- SEARCH -->
+
+        <form
+            class="search-form"
+            method="GET"
+        >
+
+            <input
+                class="search-input"
+                type="text"
+                name="search"
+                placeholder="Search movies..."
+                value="{{ search|default:'' }}"
+            >
+
+            <button
+                class="search-button"
+                type="submit"
+            >
+                Search
+            </button>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <h2>
+                {{ total_movies }}
+            </h2>
+
+            <p>
+                Movies
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h2>
+                {{ total_genres }}
+            </h2>
+
+            <p>
+                Genres
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h2>
+                {{ watchlist_count }}
+            </h2>
+
+            <p>
+                Watchlist
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- MOOD FILTER -->
+
+    <div class="mood-section">
+
+        <h2>
+            What's your mood?
+        </h2>
+
+
+        <div class="moods">
+
+            <a href="/">
+                All
+            </a>
+
+            <a
+                href="?mood=Cozy"
+                class="{% if selected_mood == 'Cozy' %}active{% endif %}"
+            >
+                Cozy
+            </a>
+
+            <a
+                href="?mood=Emotional"
+                class="{% if selected_mood == 'Emotional' %}active{% endif %}"
+            >
+                Emotional
+            </a>
+
+            <a
+                href="?mood=Thrilling"
+                class="{% if selected_mood == 'Thrilling' %}active{% endif %}"
+            >
+                Thrilling
+            </a>
+
+            <a
+                href="?mood=Romantic"
+                class="{% if selected_mood == 'Romantic' %}active{% endif %}"
+            >
+                Romantic
+            </a>
+
+            <a
+                href="?mood=Fun"
+                class="{% if selected_mood == 'Fun' %}active{% endif %}"
+            >
+                Fun
+            </a>
+
+            <a
+                href="?mood=Inspiring"
+                class="{% if selected_mood == 'Inspiring' %}active{% endif %}"
+            >
+                Inspiring
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- GENRE FILTER -->
+
+    <div class="genre-section">
+
+        <h2>
+            Browse by Genre
+        </h2>
+
+
+        <div class="genres">
+
+            <a href="/">
+                All
+            </a>
+
+            <a
+                href="?genre=Sci-Fi"
+                class="{% if selected_genre == 'Sci-Fi' %}active{% endif %}"
+            >
+                Sci-Fi
+            </a>
+
+            <a
+                href="?genre=Comedy"
+                class="{% if selected_genre == 'Comedy' %}active{% endif %}"
+            >
+                Comedy
+            </a>
+
+            <a
+                href="?genre=Mystery"
+                class="{% if selected_genre == 'Mystery' %}active{% endif %}"
+            >
+                Mystery
+            </a>
+
+            <a
+                href="?genre=Animation"
+                class="{% if selected_genre == 'Animation' %}active{% endif %}"
+            >
+                Animation
+            </a>
+
+            <a
+                href="?genre=Musical"
+                class="{% if selected_genre == 'Musical' %}active{% endif %}"
+            >
+                Musical
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- MOVIES -->
+
+    <div class="container">
+
+        <h2>
+            Explore Movies
+        </h2>
+
+
+        <div class="movies">
+
+            {% for movie in movies %}
+
+                <div class="movie-card">
+
+                    <h2>
+                        {{ movie.title }}
+                    </h2>
+
+                    <p class="info">
+                        {{ movie.genre }}
+                        •
+                        {{ movie.release_year }}
+                    </p>
+
+                    <p class="rating">
+                        ★ {{ movie.rating }}
+                    </p>
+
+                    <p class="mood">
+                        {{ movie.mood }}
+                    </p>
+
+                    <p class="description">
+                        {{ movie.description }}
+                    </p>
+
+                    <a
+                        class="details-button"
+                        href="{% url 'movie_detail' movie.id %}"
+                    >
+                        View Details
+                    </a>
+
+                </div>
+
+
+            {% empty %}
+
+
+                <div class="empty">
+
+                    No matching movies found.
+
+                </div>
+
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+
+    <footer>
+        CineMatch — Find your next watch.
+    </footer>
+
+
+</body>
+
+</html>

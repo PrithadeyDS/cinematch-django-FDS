@@ -1,0 +1,150 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>{{ movie.title }} | CineMatch</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
+
+</head>
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <a class="logo" href="/">
+            CineMatch
+        </a>
+
+        <div class="nav-links">
+
+            <a href="/">
+                Home
+            </a>
+
+            <a href="{% url 'watchlist' %}">
+                My Watchlist
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- MOVIE DETAILS -->
+
+    <div class="detail-container">
+
+        <a
+            class="back"
+            href="/"
+        >
+            ← Back to Movies
+        </a>
+
+
+        <div class="movie-detail">
+
+            <h1>
+                {{ movie.title }}
+            </h1>
+
+            <p class="info">
+                {{ movie.genre }}
+                •
+                {{ movie.release_year }}
+            </p>
+
+            <p class="rating">
+                ★ {{ movie.rating }}
+            </p>
+
+            <p class="mood">
+                {{ movie.mood }}
+            </p>
+
+            <p class="detail-description">
+                {{ movie.description }}
+            </p>
+
+
+            <!-- ADD TO WATCHLIST -->
+
+            <form
+                class="watchlist-form"
+                method="POST"
+                action="{% url 'add_to_watchlist' movie.id %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    class="watchlist-button"
+                    type="submit"
+                >
+                    + Add to Watchlist
+                </button>
+
+            </form>
+
+
+
+            <!-- MOVIE INFORMATION -->
+
+            <div class="movie-information">
+
+                <h2>
+                    Movie Information
+                </h2>
+
+                <p>
+                    <strong>Title:</strong>
+                    {{ movie.title }}
+                </p>
+
+                <p>
+                    <strong>Genre:</strong>
+                    {{ movie.genre }}
+                </p>
+
+                <p>
+                    <strong>Mood:</strong>
+                    {{ movie.mood }}
+                </p>
+
+                <p>
+                    <strong>Release Year:</strong>
+                    {{ movie.release_year }}
+                </p>
+
+                <p>
+                    <strong>Rating:</strong>
+                    {{ movie.rating }} / 5
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <footer>
+        CineMatch — Find your next watch.
+    </footer>
+
+
+</body>
+
+</html>
