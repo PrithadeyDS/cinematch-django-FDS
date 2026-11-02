@@ -44,3 +44,5 @@ path(
     name='remove_from_watchlist'
 ),
 ]
+
+urlpatterns.append(path('analytics/', views.analytics_view, name='analytics'))

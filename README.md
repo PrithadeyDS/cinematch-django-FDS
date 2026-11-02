@@ -247,6 +247,17 @@ Possible future improvements include:
 - User ratings and reviews
 - More advanced recommendation features
 
+## Data Visualizations (FT-IV Task)
+
+The application includes backend-generated visual analytics using `matplotlib` and `seaborn` mapped directly to the SQLite database metrics:
+
+1. **Numerical Data Visualization:**
+   - **Chart:** Rating Distribution Histogram.
+   - **Insight:** Visualizes the spread and density of movie user ratings across the database without distorting baseline axes.
+2. **Categorical Data Visualization:**
+   - **Chart:** Genre Frequency Bar Graph.
+   - **Insight:** Cleanly compares discrete category lengths with proper axis labeling and a professional color palette.
+
 ## Author
 
 Built as a Django web development project.

@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CineMatch - Data Analytics & Visualizations</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; text-align: center; }
+        .container { max-width: 900px; margin: auto; }
+        .card { background: #1e1e1e; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        img { max-width: 100%; height: auto; border-radius: 4px; margin-top: 10px; }
+        a { color: #bb86fc; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dataset Visualizations (FT-IV Task)</h1>
+        <p><a href="{% url 'home' %}">&larr; Back to Home</a></p>
+        {% if not charts_available %}<p>Install the optional chart packages from requirements.txt to display these charts.</p>{% endif %}
+
+        <div class="card">
+            <h2>1. Numerical Data Visualization</h2>
+            <p><strong>Chart Type:</strong> Histogram with KDE Overlay (Movie Ratings Distribution)</p>
+            {% if num_plot %}
+                <img src="data:image/png;base64,{{ num_plot }}" alt="Numerical Plot">
+            {% else %}
+                <p>No data available for plotting.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>2. Categorical Data Visualization</h2>
+            <p><strong>Chart Type:</strong> Horizontal Bar Graph (Movie Count by Genre)</p>
+            {% if cat_plot %}
+                <img src="data:image/png;base64,{{ cat_plot }}" alt="Categorical Plot">
+            {% else %}
+                <p>No data available for plotting.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

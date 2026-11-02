@@ -31,6 +31,12 @@ movies = [
 
     ["Paddington", "Comedy", "Cozy", 2014, 4.6,
      "A friendly bear begins a new life in London."],
+
+    ["The Dark Knight", "Action", "Thrilling", 2008, 4.9,
+     "Batman faces a criminal mastermind who brings chaos to Gotham."],
+
+    ["Pride and Prejudice", "Romance", "Romantic", 2005, 4.7,
+     "Elizabeth Bennet and Mr. Darcy navigate first impressions and love."],
 ]
 
 
