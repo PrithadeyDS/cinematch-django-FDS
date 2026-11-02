@@ -1,1 +1,57 @@
-import matplotlib\nmatplotlib.use('Agg') # Prevents GUI errors on headless servers\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nimport pandas as pd\nimport io\nimport base64\nfrom .models import Movie\n\ndef get_django_dataframe():\n    """Extracts movie queryset into a Pandas DataFrame."""\n    movies = Movie.objects.all().values('title', 'genre', 'mood', 'release_year', 'rating')\n    return pd.DataFrame(list(movies))\n\ndef generate_numerical_plot():\n    df = get_django_dataframe()\n    if df.empty:\n        return None\n\n    plt.figure(figsize=(7, 4))\n    sns.set_theme(style="whitegrid")\n\n    # Numerical: Histogram with KDE for movie ratings\n    sns.histplot(df['rating'], bins=5, color='teal', kde=True)\n    plt.title('Distribution of Movie Ratings', fontsize=11, fontweight='bold')\n    plt.xlabel('Rating (out of 5.0)', fontsize=10)\n    plt.ylabel('Number of Movies', fontsize=10)\n\n    buffer = io.BytesIO()\n    plt.savefig(buffer, format='png', bbox_inches='tight')\n    buffer.seek(0)\n    image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')\n    plt.close()\n    return image_base64\n\ndef generate_categorical_plot():\n    df = get_django_dataframe()\n    if df.empty:\n        return None\n\n    plt.figure(figsize=(7, 4))\n    sns.set_theme(style="whitegrid")\n\n    # Categorical: Bar plot comparing movie counts across genres\n    genre_counts = df['genre'].value_counts()\n    sns.barplot(x=genre_counts.values, y=genre_counts.index, palette='viridis', orient='h')\n    plt.title('Movie Count by Genre', fontsize=11, fontweight='bold')\n    plt.xlabel('Number of Movies', fontsize=10)\n    plt.ylabel('Genre', fontsize=10)\n\n    buffer = io.BytesIO()\n    plt.savefig(buffer, format='png', bbox_inches='tight')\n    buffer.seek(0)\n    image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')\n    plt.close()\n    return image_base64\n
+import base64
+import io
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+from movies.models import Movie
+
+
+def get_django_dataframe():
+    movies = Movie.objects.all().values("title", "genre", "mood", "release_year", "rating")
+    return pd.DataFrame(list(movies))
+
+
+def generate_numerical_plot():
+    df = get_django_dataframe()
+    if df.empty:
+        return None
+
+    plt.figure(figsize=(7, 4))
+    sns.set_theme(style="whitegrid")
+    sns.histplot(df["rating"], bins=5, color="teal", kde=True)
+    plt.title("Distribution of Movie Ratings", fontsize=11, fontweight="bold")
+    plt.xlabel("Rating (out of 5.0)", fontsize=10)
+    plt.ylabel("Number of Movies", fontsize=10)
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format="png", bbox_inches="tight")
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    plt.close()
+    return image_base64
+
+
+def generate_categorical_plot():
+    df = get_django_dataframe()
+    if df.empty:
+        return None
+
+    plt.figure(figsize=(7, 4))
+    sns.set_theme(style="whitegrid")
+    genre_counts = df["genre"].value_counts()
+    sns.barplot(x=genre_counts.values, y=genre_counts.index, palette="viridis", orient="h")
+    plt.title("Movie Count by Genre", fontsize=11, fontweight="bold")
+    plt.xlabel("Number of Movies", fontsize=10)
+    plt.ylabel("Genre", fontsize=10)
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format="png", bbox_inches="tight")
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    plt.close()
+    return image_base64

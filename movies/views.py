@@ -1,1 +1,70 @@
-from django.shortcuts import render, get_object_or_404, redirect\nfrom .models import Movie, Watchlist\n\n# HOME PAGE\ndef home(request):\n\n    movies = Movie.objects.all()\n\n    search = request.GET.get("search")\n    mood = request.GET.get("mood")\n    genre = request.GET.get("genre")\n\n    # Search\n    if search:\n        movies = movies.filter(title__icontains=search)\n\n    # Mood filter\n    if mood:\n        movies = movies.filter(mood__iexact=mood)\n\n    # Genre filter\n    if genre:\n        movies = movies.filter(genre__iexact=genre)\n\n    # Statistics\n    total_movies = Movie.objects.count()\n\n    total_genres = Movie.objects.values(\n        "genre"\n    ).distinct().count()\n\n    watchlist_count = Watchlist.objects.count()\n\n    return render(request, "home.html", {\n\n        "movies": movies,\n\n        "total_movies": total_movies,\n        "total_genres": total_genres,\n        "watchlist_count": watchlist_count,\n\n        "search": search,\n        "selected_mood": mood,\n        "selected_genre": genre,\n\n    })\n\n\n# MOVIE DETAILS\ndef movie_detail(request, movie_id):\n\n    movie = get_object_or_404(\n        Movie,\n        id=movie_id\n    )\n\n    return render(request, "movie_detail.html", {\n        "movie": movie\n    })\n\n\n# ADD TO WATCHLIST\ndef add_to_watchlist(request, movie_id):\n\n    if request.method == "POST":\n\n        movie = get_object_or_404(\n            Movie,\n            id=movie_id\n        )\n\n        Watchlist.objects.get_or_create(\n            movie=movie\n        )\n\n    return redirect("watchlist")\n\n\n# WATCHLIST PAGE\ndef watchlist(request):\n\n    items = Watchlist.objects.all()\n\n    return render(request, "watchlist.html", {\n        "items": items\n    })\n\n\n# REMOVE FROM WATCHLIST\ndef remove_from_watchlist(request, movie_id):\n\n    if request.method == "POST":\n\n        item = Watchlist.objects.filter(\n            movie_id=movie_id\n        ).first()\n\n        if item:\n            item.delete()\n\n    return redirect("watchlist")\n\ndef analytics_view(request):\n    try:\n        from cinematch.utils import generate_numerical_plot, generate_categorical_plot\n        num_plot = generate_numerical_plot()\n        cat_plot = generate_categorical_plot()\n        charts_available = True\n    except ImportError:\n        num_plot = cat_plot = None\n        charts_available = False\n\n    context = {\n        'num_plot': num_plot,\n        'cat_plot': cat_plot,\n        'charts_available': charts_available,\n    }\n    return render(request, 'analytics.html', context)\n
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Movie, Watchlist
+
+
+def home(request):
+    movies = Movie.objects.all()
+    search = request.GET.get("search")
+    mood = request.GET.get("mood")
+    genre = request.GET.get("genre")
+
+    if search:
+        movies = movies.filter(title__icontains=search)
+    if mood:
+        movies = movies.filter(mood__iexact=mood)
+    if genre:
+        movies = movies.filter(genre__iexact=genre)
+
+    context = {
+        "movies": movies,
+        "total_movies": Movie.objects.count(),
+        "total_genres": Movie.objects.values("genre").distinct().count(),
+        "watchlist_count": Watchlist.objects.count(),
+        "search": search,
+        "selected_mood": mood,
+        "selected_genre": genre,
+    }
+    return render(request, "home.html", context)
+
+
+def movie_detail(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
+    return render(request, "movie_detail.html", {"movie": movie})
+
+
+def add_to_watchlist(request, movie_id):
+    if request.method == "POST":
+        movie = get_object_or_404(Movie, id=movie_id)
+        Watchlist.objects.get_or_create(movie=movie)
+    return redirect("watchlist")
+
+
+def watchlist(request):
+    items = Watchlist.objects.all()
+    return render(request, "watchlist.html", {"items": items})
+
+
+def remove_from_watchlist(request, movie_id):
+    if request.method == "POST":
+        item = Watchlist.objects.filter(movie_id=movie_id).first()
+        if item:
+            item.delete()
+    return redirect("watchlist")
+
+
+def analytics_view(request):
+    try:
+        from cinematch.utils import generate_numerical_plot, generate_categorical_plot
+        num_plot = generate_numerical_plot()
+        cat_plot = generate_categorical_plot()
+        charts_available = True
+    except ImportError:
+        num_plot = cat_plot = None
+        charts_available = False
+
+    context = {
+        "num_plot": num_plot,
+        "cat_plot": cat_plot,
+        "charts_available": charts_available,
+    }
+    return render(request, "analytics.html", context)
