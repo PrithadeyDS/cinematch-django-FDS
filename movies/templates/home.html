@@ -142,53 +142,10 @@
 
 
         <div class="moods">
-
-            <a href="/">
-                All
-            </a>
-
-            <a
-                href="?mood=Cozy"
-                class="{% if selected_mood == 'Cozy' %}active{% endif %}"
-            >
-                Cozy
-            </a>
-
-            <a
-                href="?mood=Emotional"
-                class="{% if selected_mood == 'Emotional' %}active{% endif %}"
-            >
-                Emotional
-            </a>
-
-            <a
-                href="?mood=Thrilling"
-                class="{% if selected_mood == 'Thrilling' %}active{% endif %}"
-            >
-                Thrilling
-            </a>
-
-            <a
-                href="?mood=Romantic"
-                class="{% if selected_mood == 'Romantic' %}active{% endif %}"
-            >
-                Romantic
-            </a>
-
-            <a
-                href="?mood=Fun"
-                class="{% if selected_mood == 'Fun' %}active{% endif %}"
-            >
-                Fun
-            </a>
-
-            <a
-                href="?mood=Inspiring"
-                class="{% if selected_mood == 'Inspiring' %}active{% endif %}"
-            >
-                Inspiring
-            </a>
-
+            <a href="/" class="{% if not selected_mood %}active{% endif %}">All</a>
+            {% for mood in moods %}
+                <a href="?mood={{ mood|urlencode }}" class="{% if selected_mood == mood %}active{% endif %}">{{ mood }}</a>
+            {% endfor %}
         </div>
 
     </div>
@@ -205,46 +162,10 @@
 
 
         <div class="genres">
-
-            <a href="/">
-                All
-            </a>
-
-            <a
-                href="?genre=Sci-Fi"
-                class="{% if selected_genre == 'Sci-Fi' %}active{% endif %}"
-            >
-                Sci-Fi
-            </a>
-
-            <a
-                href="?genre=Comedy"
-                class="{% if selected_genre == 'Comedy' %}active{% endif %}"
-            >
-                Comedy
-            </a>
-
-            <a
-                href="?genre=Mystery"
-                class="{% if selected_genre == 'Mystery' %}active{% endif %}"
-            >
-                Mystery
-            </a>
-
-            <a
-                href="?genre=Animation"
-                class="{% if selected_genre == 'Animation' %}active{% endif %}"
-            >
-                Animation
-            </a>
-
-            <a
-                href="?genre=Musical"
-                class="{% if selected_genre == 'Musical' %}active{% endif %}"
-            >
-                Musical
-            </a>
-
+            <a href="/" class="{% if not selected_genre %}active{% endif %}">All</a>
+            {% for genre in genres %}
+                <a href="?genre={{ genre|urlencode }}" class="{% if selected_genre == genre %}active{% endif %}">{{ genre }}</a>
+            {% endfor %}
         </div>
 
     </div>
@@ -311,6 +232,14 @@
             {% endfor %}
 
         </div>
+
+        {% if page_obj.has_other_pages %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&search={{ search|urlencode }}&mood={{ selected_mood|urlencode }}&genre={{ selected_genre|urlencode }}">&larr; Previous</a>{% endif %}
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&search={{ search|urlencode }}&mood={{ selected_mood|urlencode }}&genre={{ selected_genre|urlencode }}">Next &rarr;</a>{% endif %}
+            </div>
+        {% endif %}
 
     </div>
 

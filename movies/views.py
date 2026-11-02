@@ -1,9 +1,20 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Movie, Watchlist
 
+GENRES = (
+    "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary",
+    "Drama", "Family", "Fantasy", "History", "Horror", "Music", "Mystery",
+    "Romance", "Science Fiction", "TV Movie", "Thriller", "War", "Western",
+)
+MOODS = (
+    "Happy", "Emotional", "Exciting", "Relaxing", "Suspenseful", "Romantic",
+    "Cozy", "Thrilling", "Fun", "Inspiring",
+)
+
 
 def home(request):
-    movies = Movie.objects.all()
+    movies = Movie.objects.all().order_by('-rating', 'title')
     search = request.GET.get("search")
     mood = request.GET.get("mood")
     genre = request.GET.get("genre")
@@ -15,8 +26,12 @@ def home(request):
     if genre:
         movies = movies.filter(genre__iexact=genre)
 
+    page_obj = Paginator(movies, 36).get_page(request.GET.get('page'))
     context = {
-        "movies": movies,
+        "movies": page_obj.object_list,
+        "page_obj": page_obj,
+        "genres": GENRES,
+        "moods": MOODS,
         "total_movies": Movie.objects.count(),
         "total_genres": Movie.objects.values("genre").distinct().count(),
         "watchlist_count": Watchlist.objects.count(),

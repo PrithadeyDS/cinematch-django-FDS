@@ -261,3 +261,17 @@ The application includes backend-generated visual analytics using `matplotlib` a
 ## Author
 
 Built as a Django web development project.
+
+## Kaggle Movie Dataset
+
+CineMatch includes the CC0 9000+ Movies Dataset from [Kaggle](https://www.kaggle.com/datasets/disham993/9000-movies-dataset). It is bundled at `movies/data/9000plus.csv`; attribution and field transformations are documented in `movies/data/README.md`.
+
+Import or refresh its records in SQLite with:
+
+```powershell
+python manage.py migrate
+python manage.py import_kaggle_movies
+python manage.py runserver
+```
+
+The importer skips rows without a usable title, release year, genre, or rating, maps the first listed genre into CineMatch's genre field, and scales ratings from 0-10 to 0-5. Mood values are derived from genre groups because the source dataset has no mood field. The homepage paginates results and builds its genre and mood filters from the app's supported catalog values.
