@@ -1,43 +1,245 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CineMatch - Data Analytics & Visualizations</title>
+    <title>CineMatch - Data Analytics</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; text-align: center; }
-        .container { max-width: 900px; margin: auto; }
-        .card { background: #1e1e1e; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-        img { max-width: 100%; height: auto; border-radius: 4px; margin-top: 10px; }
-        a { color: #bb86fc; text-decoration: none; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat-card, .chart-card {
+            background: #1e1e1e;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .stat-card h2 {
+            color: #bb86fc;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card p {
+            color: #cccccc;
+        }
+
+        .chart-card {
+            margin: 25px 0;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        a {
+            color: #bb86fc;
+            text-decoration: none;
+        }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Dataset Visualizations (FT-IV Task)</h1>
-        <p><a href="{% url 'home' %}">&larr; Back to Home</a></p>
-        {% if not charts_available %}<p>Install the optional chart packages from requirements.txt to display these charts.</p>{% endif %}
+<div class="container">
 
-        <div class="card">
-            <h2>1. Numerical Data Visualization</h2>
-            <p><strong>Chart Type:</strong> Histogram with KDE Overlay (Movie Ratings Distribution)</p>
-            {% if num_plot %}
-                <img src="data:image/png;base64,{{ num_plot }}" alt="Numerical Plot">
-            {% else %}
-                <p>No data available for plotting.</p>
-            {% endif %}
+    <h1>CineMatch Data Analytics</h1>
+    <p>Explore insights from our movie dataset.</p>
+
+    <p><a href="{% url 'home' %}">&larr; Back to Home</a></p>
+
+    <!-- SUMMARY CARDS -->
+    <div class="stats">
+
+        <div class="stat-card">
+            <h2>{{ total_movies }}</h2>
+            <p>Total Movies</p>
         </div>
 
-        <div class="card">
-            <h2>2. Categorical Data Visualization</h2>
-            <p><strong>Chart Type:</strong> Horizontal Bar Graph (Movie Count by Genre)</p>
-            {% if cat_plot %}
-                <img src="data:image/png;base64,{{ cat_plot }}" alt="Categorical Plot">
-            {% else %}
-                <p>No data available for plotting.</p>
-            {% endif %}
+        <div class="stat-card">
+            <h2>{{ average_rating }}</h2>
+            <p>Average Movie Rating</p>
         </div>
+
+        <div class="stat-card">
+            <h2>{{ total_genres }}</h2>
+            <p>Total Genres</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>
+                {% if earliest_year and latest_year %}
+                    {{ earliest_year }} - {{ latest_year }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </h2>
+            <p>Movie Release Year Range</p>
+        </div>
+
     </div>
+
+    <!-- NUMERICAL VISUALIZATION -->
+    <div class="chart-card">
+        <h2>1. Numerical Data Visualization</h2>
+        <p><strong>Chart:</strong> Histogram with KDE Overlay</p>
+        <p>This chart shows how movie ratings are distributed across the dataset.</p>
+
+        {% if num_plot %}
+            <img src="data:image/png;base64,{{ num_plot }}"
+                 alt="Movie ratings distribution">
+        {% else %}
+            <p>No numerical data available for plotting.</p>
+        {% endif %}
+    </div>
+
+    <!-- CATEGORICAL VISUALIZATION -->
+    <div class="chart-card">
+        <h2>2. Categorical Data Visualization</h2>
+        <p><strong>Chart:</strong> Horizontal Bar Graph</p>
+        <p>This chart compares the number of movies belonging to each genre.</p>
+
+        {% if cat_plot %}
+            <img src="data:image/png;base64,{{ cat_plot }}"
+                 alt="Movie count by genre">
+        {% else %}
+            <p>No categorical data available for plotting.</p>
+        {% endif %}
+    </div>
+
+
+<!-- KEY INSIGHTS SECTION -->
+<div class="chart-card">
+
+    <h2>3. Key Insights from the Dataset</h2>
+
+    <p>Important findings based on the movie database.</p>
+
+    <div class="stats">
+
+        <!-- Insight 1: Most popular genre -->
+        <div class="stat-card">
+            <h2>{{ top_genre_name }}</h2>
+            <p>Most Represented Genre</p>
+            <p>{{ top_genre_count }} movies</p>
+        </div>
+
+        <!-- Insight 2: Highest rated movie -->
+        <div class="stat-card">
+            <h2>{{ top_movie_title }}</h2>
+            <p>Highest Rated Movie</p>
+            <p>Rating: {{ top_movie_rating }}</p>
+        </div>
+
+    </div>
+
+    <p>
+        These insights help identify the most common movie genre
+        and the highest-rated movie in the dataset.
+    </p>
+
+</div>
+
+
+<!-- MOVIE RELEASE TRENDS -->
+<div class="chart-card">
+
+    <h2>4. Movie Release Trends</h2>
+
+    <p>
+        This line chart shows how the number of movies released
+        changes over different years.
+    </p>
+
+    {% if release_plot %}
+        <img
+            src="data:image/png;base64,{{ release_plot }}"
+            alt="Movie release trends over the years">
+    {% else %}
+        <p>No release-year data available.</p>
+    {% endif %}
+
+</div>  <!-- End Movie Release Trends -->
+
+<!-- PASTE TOP 5 GENRES HERE -->
+<div class="chart-card">
+
+    <h2>5. Top 5 Movie Genres</h2>
+
+    <p>These are the five most common genres in CineMatch.</p>
+
+    {% if top_genres_plot %}
+        <img src="data:image/png;base64,{{ top_genres_plot }}"
+             alt="Top five movie genres">
+    {% else %}
+        <p>No genre data available.</p>
+    {% endif %}    
+
+</div>
+
+
+<!-- DATA INTERPRETATION -->
+<div class="chart-card">
+
+    <h2>6. Data Interpretation</h2>
+
+    <p>
+        <strong>1. Movie Ratings:</strong>
+        The histogram helps us understand how movie ratings
+        are distributed and whether most movies have high,
+        average, or low ratings.
+    </p>
+
+    <p>
+        <strong>2. Genre Distribution:</strong>
+        The genre bar chart shows which categories contain
+        more movies and which are less represented.
+    </p>
+
+    <p>
+        <strong>3. Release Trends:</strong>
+        The line chart helps identify changes in the number
+        of movies released over different years.
+    </p>
+
+    <p>
+        <strong>4. Top Genres:</strong>
+        The Top 5 chart compares the most frequently occurring
+        genres in the dataset.
+    </p>
+
+    <p>
+        <strong>5. Overall Findings:</strong>
+        The dashboard combines numerical and categorical
+        analysis to provide a clearer understanding of
+        the CineMatch movie dataset.
+    </p>
+
+</div>
+
+</div>
 </body>
 </html>

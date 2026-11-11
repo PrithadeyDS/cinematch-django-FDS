@@ -1,6 +1,10 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Avg, Min, Max,Count
+
+from cinematch.utils import generate_release_trends_plot 
 from .models import Movie, Watchlist
+
 
 GENRES = (
     "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary",
@@ -67,19 +71,88 @@ def remove_from_watchlist(request, movie_id):
     return redirect("watchlist")
 
 
+
 def analytics_view(request):
+
+    # Generate existing charts
     try:
-        from cinematch.utils import generate_numerical_plot, generate_categorical_plot
+        from cinematch.utils import (
+            generate_numerical_plot,
+            generate_categorical_plot,
+            generate_release_trends_plot,
+            generate_top_genres_plot
+        )
+
         num_plot = generate_numerical_plot()
         cat_plot = generate_categorical_plot()
+        release_plot = generate_release_trends_plot()
+        top_genres_plot = generate_top_genres_plot()
+
         charts_available = True
+
     except ImportError:
-        num_plot = cat_plot = None
+        num_plot = None
+        cat_plot = None
+        release_plot = None
+        top_genres_plot = None
         charts_available = False
 
+    # Calculate total number of movies
+    total_movies = Movie.objects.count()
+
+    # Calculate average rating
+    average_rating = Movie.objects.aggregate(
+        Avg('rating')
+    )['rating__avg']
+
+    # Count unique genres
+    total_genres = Movie.objects.values(
+        'genre'
+    ).distinct().count()
+
+    # Find earliest and latest release years
+    release_years = Movie.objects.aggregate(
+        Min('release_year'),
+        Max('release_year')
+    )
+
+    earliest_year = release_years['release_year__min']
+    latest_year = release_years['release_year__max']
+
+      # INSIGHT 1: Find the genre containing the most movies
+    top_genre = Movie.objects.values('genre').annotate(
+        movie_count=Count('id')
+    ).order_by('-movie_count').first()
+
+    # INSIGHT 2: Find the movie with the highest rating
+    highest_rated_movie = Movie.objects.order_by(
+        '-rating'
+    ).first()
+
+    
+
+    # Prepare data for HTML template
     context = {
         "num_plot": num_plot,
         "cat_plot": cat_plot,
+        "release_plot": release_plot,
         "charts_available": charts_available,
+
+        "total_movies": total_movies,
+        "average_rating": round(average_rating, 2) if average_rating is not None else 0,
+        "total_genres": total_genres,
+
+        "earliest_year": earliest_year,
+        "latest_year": latest_year,
+
+        "top_genre_name": top_genre['genre'] if top_genre else "No data",
+        "top_genre_count": top_genre['movie_count'] if top_genre else 0,
+        "top_genres_plot": top_genres_plot,
+        
+        "top_movie_title": highest_rated_movie.title if highest_rated_movie else "No data",
+        "top_movie_rating": highest_rated_movie.rating if highest_rated_movie else 0,
     }
+
     return render(request, "analytics.html", context)
+
+    
